@@ -31,7 +31,7 @@ Data include 4 csv files :***Sales, Products, Shipments, Customers.***
 - AWS services : S3, Redshift (data warehouse)
 
 ## 2. Implementation overview 
-Design data models for OLTP database (PostgreSQL) and data warehouse (Amazon Redshift). Build an ETL pipeline to transform raw data into actionable insights in PostgreSQL, also store them in S3 for staging. Then implement another ETL pipeline which process data from S3 and load them to Amazon Redshift for enhanced data analytics . Using Airflow to orchestrate pipeline workflow, Terraform for setting up AWS Redshift cluster, and Docker to containerize the project - allow for fast build, test, and deploy project.
+Design data models for OLTP database (PostgreSQL) and data warehouse (Amazon Redshift). Build an ETL pipeline to transform raw data into actionable insights in PostgreSQL, also store them in S3 for staging. Then implement another ETL pipeline which process data from S3 and load them to Amazon Redshift for enhanced data analytics . Using Airflow to orchestrate pipeline workflow
 
 ![design_overview](picture/Airflow%20conceptual%20view.png)
 
@@ -170,24 +170,6 @@ all they all inherit from the parent class in **Transform.py** :
 ![load_to_redshift](picture/load-into-redshift.png)
 ***Airflow tasks***
   
-```python
-# ./dags_setup.py # Airflow dags
-ETL_s3 = PythonOperator(
-    task_id = "ETL_s3",
-    python_callable = ETL_s3
-)
-
-Create_redshift_schema = PythonOperator(
-    task_id = "Create_redshift_schema",
-    python_callable = Create_redshift_schema,
-    op_kwargs = {"root_dir" : "/opt/airflow/redshift_setup"}  
-)
-
-Load_s3_redshift = PythonOperator(
-    task_id = "Load_s3_redshift",
-    python_callable = Load_s3_to_redshift
-)
-```
 ***1. ETL_s3 :*** Extract data from PostgreSQL database, perform transformation, and load to S3 bucket 
 
 ***2. Create_redshift_schema :*** Create redshift schema
